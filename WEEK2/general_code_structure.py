@@ -1,26 +1,29 @@
 """
-Docstring describing what this function does, like an abstract
+Docstring describing what this function does, like an abstract. There are 
+different ways to format this docstring, some of the weird formatting is so that
+it works with documentation tools. You are welcome to format however you see fit
 
-.. rubric::
 
-    How do I call this code, what are its inputs and outputs?
-    $ python do_stuff.py argument1 argument 2
+How to Use
+    Here is how I call this code, its expected inputs and outputs:
+    $ python do_stuff.py argument1 argument2
 
-.. warning::
-
-    What should I be aware of when running this code? 
-    That it will take a while?
-    That it will fail if my data are not in the correct order?
+Caveats
+    - What should I be aware of when running this code? 
+    - That it will take a while?
+    - That it will fail if my data are not in the correct order?
 
 References
     1. This code was inspired by this code from over there
-    2 The equation used in this function is from this book `Book Title`
+    2. The equation used in this function is from this book `Book Title`
 
-Written by: me
+Authors
+    Me, myself, I
 """
 import ...
 
 CONSTANT = value
+
 
 def do_stuff(x, y, z):
     """
@@ -37,12 +40,14 @@ def do_stuff(x, y, z):
     out = x + y + z
 
     # doing some other stuff
+    # ...
 
-    # NOTE: When this function finishes, all of the variables inside are lost
+    # NOTE: When this function finishes, all of the variables inside are except
+    # for those that are in the return
     return out
 
 
-def other_functions():
+def other_function():
     #...
     return other stuff
 
@@ -59,12 +64,15 @@ def main():
     okay_variable = do_stuff(x=cool_variable, y=cooler_variable, 
                              z=coolest_variable)
 
-    better_variable(do_Stuff(x=okay_variable, y=cool_variable,
-                             z=cooler_variable)
+    better_variable = do_stuff(x=okay_variable, y=cool_variable,
+                               z=cooler_variable)
 
-    # whatever else your code wants
+    # whatever else you need to do
+    # ...
 
     print(better_variable)
+
+    # Note that main does not return anything, this is the end of the program
 
 
 if __name__ == "__main__":
