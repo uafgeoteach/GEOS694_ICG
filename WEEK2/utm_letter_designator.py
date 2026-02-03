@@ -9,16 +9,13 @@ def utm_letter_designator(lat):
     Written by Chuck Gantz- chuck.gantz@globalstar.com
 
     :type lat: float
-    :param lat: latitude to check for designation
+    :param lat: latitude to check for designation 
     :rtype: str
     :return: letter designation for given `lat`
     """
     # Designation codes: (lat_max, lat_min]
     utm_designations = {
-        "X": (84.001, 72),  # fudge factor to make logic work
-        "W": (72, 64),
-        "V": (64, 56),
-        "U": (56, 48),
+        "X": (84.001, 72), "W": (72, 64), "V": (64, 56), "U": (56, 48),
         "T": (48, 40),
         "S": (40, 32),
         "R": (32, 24),
