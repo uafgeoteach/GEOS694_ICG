@@ -60,7 +60,7 @@ def read_guage_file(fid):
         timestamp = (d * 24 * 60) + (h * 60) + m
         timestamps.append(timestamp)
 
-    return timestamp, hgt
+    return timestamps, hgt
 ```
 
 ### TO DO TASK 1  
