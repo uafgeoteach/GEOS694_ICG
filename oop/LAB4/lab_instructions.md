@@ -16,19 +16,19 @@ This lab will give you a chance to work with Classes to practice the mechanics o
 ### Context
 
 Imagine you are a UAF geoscience graduate student (difficult, I know), and your advisor has tasked you
-with analyzing all USGS stream guages in Alaska to understand water throughput during a recent storm. If succesful, this may expand to looking at all storms in the historical record. You foresee that this will not just be a one-off, and decide this is a perfect opportunity to try out Classes and object oriented programming concepts you learned about in class. 
+with analyzing all USGS stream gauges in Alaska to understand water throughput during a recent storm. If succesful, this may expand to looking at all storms in the historical record. You foresee that this will not just be a one-off, and decide this is a perfect opportunity to try out Classes and object oriented programming concepts you learned about in class. 
 
 
-## Task 1: Stream Guage Data
+## Task 1: Stream gauge Data
 
 In this task we will read and plot our example data so we can see what we are working with:
 
-1. Download the example stream guage data from GitHub (`phelan_creek_stream_guage_2024-09-07_to_2024-09-14.txt`). 
+1. Download the example stream gauge data from GitHub (`phelan_creek_stream_gauge_2024-09-07_to_2024-09-14.txt`). 
 -    You can `Download Raw File` button directly from GitHub, no need to pull from GitHub.  
 2. Use VSCode or a text editor to view the data file and understand what it shows you.
-3. In a new script file named `streamguage.py`, copy-paste the function `read_guage_file()` below
-4. Write the remainder of the code to read in the guage date, place this under under `if _name__ == "__main__":`
-5. Write a new function `plot` that plots the guage data, call this under the main code you wrote in (4)
+3. In a new script file named `streamgauge.py`, copy-paste the function `read_gauge_file()` below
+4. Write the remainder of the code to read in the gauge date, place this under under `if _name__ == "__main__":`
+5. Write a new function `plot` that plots the gauge data, call this under the main code you wrote in (4)
 6. Create a figure of the plotted data   
 
 > **NOTE**: *I could have asked you to write the function yourselves, but since this lab is focused on creating classes, I wrote it ahead of time so you can spend time doing more important things. And so that you are all working from the same data.*
@@ -36,16 +36,16 @@ In this task we will read and plot our example data so we can see what we are wo
 ```python
 import numpy as np
 
-def read_guage_file(fid):
+def read_gauge_file(fid):
     """
-    Read USGS Guage data and convert date and time to minutes since start
+    Read USGS gauge data and convert date and time to minutes since start
 
     parameters
     fid (str): path to data
 
     returns
     timestamp (list): ???
-    hgt (np.array): guage height in ft
+    hgt (np.array): gauge height in ft
     """
     date, time, hgt = np.loadtxt(fid, skiprows=28, usecols=[2,3,5], 
                                     dtype=str).T
@@ -72,9 +72,9 @@ b. Looking at the figure, what are the time and data values associated with the 
 
 ## Task 2: Class
 
-The script we have now is great and for all intents and purposes does what we want it to. But we know that we will have to look at, and modify, lots of stream guage data, so we want to build a structure around the data, with methods to match. In Python we want to build a Class.
+The script we have now is great and for all intents and purposes does what we want it to. But we know that we will have to look at, and modify, lots of stream gauge data, so we want to build a structure around the data, with methods to match. In Python we want to build a Class.
 
-1. In the same script file, create a new `class` called `StreamGuage`
+1. In the same script file, create a new `class` called `Streamgauge`
 2. Inside the new class write the `__init__` contructor which set the following attributes:  
     a. Data File ID (`fid`)  
     b. Station ID  (`station_id`)  
@@ -85,23 +85,23 @@ The script we have now is great and for all intents and purposes does what we wa
     a. `time=[]`   
     b. `data=[]`  
     c. `units='ft'`
-4. Modiying your existing `read_guage_file()` function, create a new method `StreamGuage().read_guage_file`:
+4. Modiying your existing `read_gauge_file()` function, create a new method `Streamgauge().read_gauge_file`:
     - Remember that you can access the file id through `self.fid`
     - Instead of `return` at the end of the function, have the function populate, or append to, `time` and `data`
-5. Modifying your existing `plot()` function, create a new method `StreamGuage().plot()` that plots the `time` and `data` attributes. 
-    - `StreamGuage.plot()` should take no inputs.
-    - `StreamGuage.plot()` should dynamically create a title with the relevant information referenced from the attributes, in other words, have the title say something like:  
-    `Stream Guage <SITE NO> <SITE NAME> <START TIME> <MAX HEIGHT> <GUAGE UNIT>`
+5. Modifying your existing `plot()` function, create a new method `Streamgauge().plot()` that plots the `time` and `data` attributes. 
+    - `Streamgauge.plot()` should take no inputs.
+    - `Streamgauge.plot()` should dynamically create a title with the relevant information referenced from the attributes, in other words, have the title say something like:  
+    `Stream gauge <SITE NO> <SITE NAME> <START TIME> <MAX HEIGHT> <gauge UNIT>`
 6. Copy the following code block to the bottom of your file and make sure that your script can successfully evaluate it when you call   
-`$ python streamguage.py`:
+`$ python streamgauge.py`:
     ```python
     if __name__ == "__main__":
-        fid = "phelan_creek_stream_guage_2024-09-07_to_2024-09-14.txt"
-        sg = StreamGuage(fid=fid, station_id="15478040", 
+        fid = "phelan_creek_stream_gauge_2024-09-07_to_2024-09-14.txt"
+        sg = Streamgauge(fid=fid, station_id="15478040", 
                          station_name="PHELAN CREEK", starttime="2024-09-07 00:00")
         assert(len(sg.data) == 0)  # check that we haven't read data yet
         
-        sg.read_guage_file()
+        sg.read_gauge_file()
         assert(len(sg.time) == len(sg.data))  # check that data and time are equal
 
         sg.plot()
@@ -110,7 +110,7 @@ The script we have now is great and for all intents and purposes does what we wa
 ### TO DO TASK 2
 
 **Reflection**  
-a. What is the max guage height shown on your figure?  
+a. What is the max gauge height shown on your figure?  
 b. At this point do you think its worth the additional overhead of dealing with a class?  (Your answer can be 'no' or 'I don't think so')  
 c. Can you think of a way you can simplify the code in (6) based on what's in the data file? (don't implement, just discuss)
 
@@ -119,15 +119,15 @@ c. Can you think of a way you can simplify the code in (6) based on what's in th
 
 In geosciences we often want to do more than read and plot raw data, we want to acquire some information about our signal or do some processing. In a Class, we can do that through implementation of new methods. 
 
-1. Write a method `StreamGuage().convert()` that converts the data array from units of **feet** to units of **meters**. 
+1. Write a method `Streamgauge().convert()` that converts the data array from units of **feet** to units of **meters**. 
     - Be sure it modifies the class attribute `units`, too!
-2. Write a method `StreamGuage().demean()` that subtracts the mean value of the data array from the data array
-3. Write a method `StreamGuage().shift_time()` that offsets the time axis by a user-input amount of minutes.
+2. Write a method `Streamgauge().demean()` that subtracts the mean value of the data array from the data array
+3. Write a method `Streamgauge().shift_time()` that offsets the time axis by a user-input amount of minutes.
 4. Make sure that your class can evaluate the following code block, and that the output plot has the modifications that you have made  
     ```python
     if __name__ == "__main__":
-        sg = StreamGuage(fid, "15478040", "PHELAN CREEK", "2024-09-07 00:00", "ft")  
-        sg.read_guage_file()   
+        sg = Streamgauge(fid, "15478040", "PHELAN CREEK", "2024-09-07 00:00", "ft")  
+        sg.read_gauge_file()   
         sg.plot()   
 
         sg.convert()   
@@ -144,9 +144,9 @@ In geosciences we often want to do more than read and plot raw data, we want to 
 
 Debugging classes is the same as in normal scripting, you can use `breakpoint()` OR `import ipdb; ipdb.set_trace()` (for more functionality) to stop the code mid-run and inspect the code state. Let's run the debugger inside the class to see how this works.
 
-1. In your source code, put a debugger call at the **top** of the function `StreamGuage().covert()` 
+1. In your source code, put a debugger call at the **top** of the function `Streamgauge().covert()` 
 2. Convert should have access to `data`, from inside the debugger determine the 20th entry of the array, write it down?
-3. Exit the debugger and now put a debugger call at the **bottom** of the function `StreamGuage().convert()`
+3. Exit the debugger and now put a debugger call at the **bottom** of the function `Streamgauge().convert()`
 4. Note down the 20th entry of the array()
 5. Still in the debugger, run the `plot()` command, make note of whether the time is shifted or not.
 
@@ -158,10 +158,10 @@ Debugging classes is the same as in normal scripting, you can use `breakpoint()`
 
 ## Task 5: Scaling
 
-The beauty of classes and object oriented programming is that they are designed to scale (whereas scripts often require re-tooling to do so). Now that you have got this to work on a single data set, your advisor has asked that you scale up to multiple stream guages. Lucky for you, you're ready for it.
+The beauty of classes and object oriented programming is that they are designed to scale (whereas scripts often require re-tooling to do so). Now that you have got this to work on a single data set, your advisor has asked that you scale up to multiple stream gauges. Lucky for you, you're ready for it.
 
-1. Define a function `StreamGuage.main()` that implements the processing and plotting steps in `Task 3.4`
-2. Copy the file `phelan_creek_stream_guage_2024-09-07_to_2024-09-14.txt` to a new file named `phelan_creek_stream_guage_2024-10-07_to_2024-10-14.txt`
+1. Define a function `Streamgauge.main()` that implements the processing and plotting steps in `Task 3.4`
+2. Copy the file `phelan_creek_stream_gauge_2024-09-07_to_2024-09-14.txt` to a new file named `phelan_creek_stream_gauge_2024-10-07_to_2024-10-14.txt`
 3. In the new file, making the following modifications. Don't do this manually! Vim, Nano, VSCode have ways modify multiple lines at once.
 - Data Array (`1755_0065`): Add a leading 1 (e.g., 47.94 -> 147.94)
 - Time Array (`datetime`): Change the month to 10 (2024-09-07 -> 2024-10-07)
@@ -170,28 +170,28 @@ The beauty of classes and object oriented programming is that they are designed 
 ```python
 if __name__ == "__main__":
     for fid in [...]:  # fill in
-        StreamGuage(...).main()  # fill in
+        Streamgauge(...).main()  # fill in
 ```
 
 ### TO DO TASK 5
 **Reflection:** 
 Your advisor asks you to do a different processing scheme where you don't convert the data, oh and also another one where you only time shift by -50. But also make sure you can still do this processing step!   
     a. How would you approach this if you were not using classes (i.e., just scripting).   
-    b. Describe what you would modify in your `StreamGuage` Class to accomplish all these different things? You can write pseudocode if it is easier.  
+    b. Describe what you would modify in your `Streamgauge` Class to accomplish all these different things? You can write pseudocode if it is easier.  
     c. Does one approach or the other feel easier to manage?  
 
 
 ## Task 6: Inheritance
 
-Now let's say you have a specific subset of stream guages from a different agency (e.g., NOAA). In this hypothetical example NOAA stream guages output units of meters, which affects a lot of the assumptions you make throughout the code, and has some consequences for downstream behavior. You need to find a way to use the same class definition, but adjust for USGS vs NOAA stream guages.
+Now let's say you have a specific subset of stream gauges from a different agency (e.g., NOAA). In this hypothetical example NOAA stream gauges output units of meters, which affects a lot of the assumptions you make throughout the code, and has some consequences for downstream behavior. You need to find a way to use the same class definition, but adjust for USGS vs NOAA stream gauges.
 
 1. Answer reflection question (a)
-2. In the same script, create a new class `NOAAStreamGuage` and have it inherit from `StreamGuage`
-3. Overwrite the class attribute `units` so that it is in the correct units of the NOAA stream guage.
+2. In the same script, create a new class `NOAAStreamgauge` and have it inherit from `Streamgauge`
+3. Overwrite the class attribute `units` so that it is in the correct units of the NOAA stream gauge.
 4. Overwrite the function `convert` so that it does nothing when called.
-5. Re-define the function `read_guage_file()` 
-- Use the `super()` functionality to call the previous behavior of `StreamGuage`
-- After the `super()` call, have the function `NOAAStreamGuage.read_guage_file()` modify the functionality by printing ("I am a NOAA stream guage"). 
+5. Re-define the function `read_gauge_file()` 
+- Use the `super()` functionality to call the previous behavior of `Streamgauge`
+- After the `super()` call, have the function `NOAAStreamgauge.read_gauge_file()` modify the functionality by printing ("I am a NOAA stream gauge"). 
 - Remember that the boilerplate for this looks like:
     ```python
     class Child(Parent):
@@ -199,13 +199,13 @@ Now let's say you have a specific subset of stream guages from a different agenc
             super().function()
             # ...additional functionality goes here
     ```
-6. Modify the code block you wrote in `Task 5.4` and see that you get the behavior you want, if you swap out `StreamGuage` for `NOAAStreamGuage`
+6. Modify the code block you wrote in `Task 5.4` and see that you get the behavior you want, if you swap out `Streamgauge` for `NOAAStreamgauge`
 
 ### TO DO TASK 6
 **Reflections**  
     a. How would you implement this change in your class definition (without inheritance), assuming every function needs to be modified.  
     b. What behavior were you expecting in 6?   
-    c. Write some pseudocode to define how the code after `if __name__ == "__main__":` block would operate if you were mixing USGS and NOAA stream guages. Try to make it as concise as possibe.  
+    c. Write some pseudocode to define how the code after `if __name__ == "__main__":` block would operate if you were mixing USGS and NOAA stream gauges. Try to make it as concise as possibe.  
     d. Do you think that your implementation in (a) would be better or worse in terms of readability, maintenance, future use, as compared to the approach with inheritance? 
 
 ---
@@ -217,6 +217,6 @@ Now let's say you have a specific subset of stream guages from a different agenc
     b. Approximately how long did you spend on the entire lab?  
     c. Can this lab be updated or modified in any way to make things easier, or more challenging?  
     d. General feedback if you have any.
-3. Upload your `streamguage.py` file to your course GitHub page.  
+3. Upload your `streamgauge.py` file to your course GitHub page.  
 
 
