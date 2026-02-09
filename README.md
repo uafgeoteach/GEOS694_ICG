@@ -1,3 +1,3 @@
 UAF GEOS694 Intro. Computational Geosciences
 
-extra text
+not what I wanted
