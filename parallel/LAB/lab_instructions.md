@@ -125,6 +125,6 @@ if __name__ == "__main__":
 
 
 Please Submit:
-- The code you have written that contains the parallel implementation (upload to GitHub)
-- Please include: figures of runtime scaling
-- Reflections (submitted on Canvas)
+- Each of the codes you have written in Tasks 1-3 (upload to your fork of the class GitHub)
+- Please include in your GitHub uplaod: Figures from Tasks 2 and 4.
+- Reflections (submitted in Canvas text box)
