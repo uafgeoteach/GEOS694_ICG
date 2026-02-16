@@ -16,7 +16,7 @@ In this lab we will play around with Python's `concurrent.futures` package to im
 ### Context
 
 ### Task 1: Serial Code
-- Start a new Python script called `2d_gaussian_serial.py`
+- Start a new Python script called `2d_gaussian.py`
 - Copy the following code block into your new script
 ```python
 import time
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 ### Task 2: Easy Parallel
 - Copy your script into a new file: 
     ```bash
-    cp 2d_gaussian_serial.py 2d_gaussian_embarassing.py
+    cp 2d_gaussian.py 2d_gaussian_embarassing.py
     ```
 - Rewrite the script so that is can be embarassingly parallelized with a multiple terminal, Bash script, or subprocess approach (see lecture slides and example scripts in this directory)
 - Break the problem into 2 tasks to create 2 individual figures (you do **not** have to combine them)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 ### Task 5: Final Reflection
 
 - Give 2 examples of geoscience/geophysics problems that are embarassingly parallel
-- Give 1 example of a geoscience problem that cannot be parallelized
+- Give 1 example of a geoscience/geophysics problem that cannot be parallelized
 - Is parallelizing your code worth it for already-fast calculations?
 - Describe a situation when you would not want to implement multiprocessing in your problem
 - So far we have solved problems on a single computer with multiple cores. Think about and describe how this might change when we run on a cluster/high performance computer
