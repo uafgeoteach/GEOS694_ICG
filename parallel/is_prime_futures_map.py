@@ -33,7 +33,7 @@ def main(N):
     # provide a list of tuples (i, j)
     iterables = [(i, i + step) for i in range(1, N, step)]
    
-    # Execute `nproc` processes in parallel
+    # Execute `nproc` processes in parallel. 
     with ProcessPoolExecutor(max_workers=nproc) as executor:
         results = executor.map(get_prime, iterables)
  

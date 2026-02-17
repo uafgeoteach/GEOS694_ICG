@@ -84,7 +84,7 @@ if __name__ == "__main__":
     cp 2d_gaussian_embarrasing.py 2d_gaussian_concurrent.py
     ```
 - Use `concurrent.futures` to parallelize this problem and create 1 final figure. Do this all in one script.
-- Make use the of `submit` and `as_completed` functions
+- The following functions may be useful for you: `map`, `submit`, `as_completed`. Have a look and see what each of these does.
 - Set `max_workers` to 4 for now
 - Some Tips:
     - Use the documentation, Google, the example from class etc. to help you figure out how to implement this.
@@ -99,11 +99,11 @@ if __name__ == "__main__":
 
 --- 
 ### Task 4: Scaling
-- Increase your problem size by changing `STEP` in `2d_gaussian_serial.py` and run it. Find a value of `STEP` so that it takes on the order of a few minutes to run.
+- Increase your problem size by changing `STEP` in `2d_gaussian_serial.py` and run it. Find a value of `STEP` so that it takes on the order of 30-60s (for me it was `STEP`==.0005)
 - Note down the serial runtime in seconds
 - Now run change the value of `STEP` in `2d_gaussian_concurrent.py` and start at `max_workers==1`
 - Note down the runtime, and begin incrementing `max_workers` by 1.
-- Once you get past the total number of cores on your laptop (`os.get_cpu()`) you can start incrementing by larger values. Try to find the point where the code crashes.
+- Once you get past the total number of cores on your laptop (`os.cpu_count()`) you can start incrementing by larger values. Try to find the point where the code crashes.
 - Make a plot of `max_workers` versus runtime [s]. 
 
 #### Reflection

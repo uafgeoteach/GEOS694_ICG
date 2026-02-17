@@ -26,9 +26,9 @@ def main(N):
     step = N // nproc  # break up problem into even parts
    
     # Execute `nproc` processes in parallel
+    i_list = range(1, N, step)
     with ProcessPoolExecutor(max_workers=nproc) as executor:
-        futures = [executor.submit(get_prime, i, i + step) 
-                   for i in range(1, N, step)]
+        futures = [executor.submit(get_prime, i_list)]
   
     # As each task completes, append to our list of primes
     primes = []
