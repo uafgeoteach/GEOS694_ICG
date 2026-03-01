@@ -111,7 +111,6 @@ if __name__ == "__main__":
 - Are there diminishing returns for scaling up?
 - What limitations are we running into when we throw more and more cores at it, going past the physical number of cores on our machine?
 
-
 ---
 ### Task 5: Final Reflection
 

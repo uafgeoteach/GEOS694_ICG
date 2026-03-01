@@ -1,4 +1,8 @@
-"""Check if a number is prime or not, in parallel"""
+"""
+Check if a number is prime or not, in parallel
+Aggregate results as completed so that there is a final list of primes 
+Allow using all available cores on machine with `os.cpu_count()`
+"""
 import os
 import sys
 import time
