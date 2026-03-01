@@ -1,0 +1,9 @@
+# Comments are allowed in YAML files
+f:
+  - 1  # In-line comments are also allowed
+  - 2
+  - 3
+dx: .001
+color: 'r'
+legend: true
+
