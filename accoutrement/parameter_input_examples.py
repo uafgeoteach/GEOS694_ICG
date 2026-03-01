@@ -145,10 +145,17 @@ def yaml_strategy():
 
     plot_cosx_multi(**params)
 
+def py_strategy():
+    from example_input import f, c, dx, l
+
+    plot_cosx_multi(f, dx, c, l)
+
+
 
 if __name__ == "__main__":
     # sys_argv()
     # sys_argv_alternative()
     # input_strategy()
     # argparser_strategy()
-    yaml_strategy()
+    # yaml_strategy()
+    py_strategy()
