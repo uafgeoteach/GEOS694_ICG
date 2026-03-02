@@ -1,30 +1,78 @@
-# Lab 6: Bring Your Own Code (BYOC)
+# Lab 7: Bring Your Own Code (BYOC)
 
-**Motivation:** This is a free-form lab where you have the opportunity to write, re-write,
-improve and optimize your own research codes with guidance from the instructor
-and your classmates. Due to the wide variety of resources, where some students
-have solid research codes, and others have ideas but not much scaffolding,
-I offer a few approaches below, feel free to pick the path that best suits your
-current needs.
+**Motivation:** In this lab you will have the opportunity to write or improve your own research codes with guidance. 
+I offer a few approaches below, please pick the path that best suits your current needs.
 
 ## Instructions
 
-- This lab focuses on implementing topics that we learned in class in your own code. 
-- You will do this either through implementation reflection. 
-- Do not submit code you have that already exists, this is an opportunity to create or revise and to 
-practice implementing. Take this as an opportunity to try the thing that you didn't think you'd use.
+1. Select one of the `Options` below.
+2. Complete `Tasks` through implementation or reflection.
+3. Get as far as you can during lab today and upload what you have to GitHub by the end of Lab.
+4. I will provide comments/suggestions/feedback on your code via GitHub, you may leave question or comments 
+throughout your code if you want me to focus on anything particular.
+
+
+### Instructor Remarks
+Take this as an opportunity to 1) try something that you don't think you will use outside of this class, 2) as an opportunity revisit code that you deem as "good enough" but could be cleaner, 3) as a chance to try out that new idea that you didn't think you would have time for. 
+
+One of the the **assessment mechanisms** will be whether one of your 
+classmates will be able to run and understand your code **without** any discussion with you. Keep that in mind as you work.
+
+
+I will give opportunities in future labs/homeworks to continue working on this, so set yourself up for 
+a multiple sessions of work. Ultimately I will grade the cumulative labs with the following rubric:
+
+- 45% - Adherance to `Tasks` below
+- 40% - Amount of new work (i.e., how much is different from start to finish)
+- 15% - Accessibility (can your classmate, or me, run this without help?)
+
+
+## Options
+
+Please choose **one** of the following options to complete the `Tasks` below.
+
+### Option #1: Modify Existing Code
+
+Take your existing research code and improve it. 
+
+Be sure to commit your code before you start making changes and provide me a link
+to the commit where you started making your changes. Consider branch development
+and committing small and often to ensure you can get back to a working state.
+
+### Option #2: Re-write Existing Code
+
+Take your existing research code and re-build it from scratch. 
+
+You might consider this option if you have a mature code, but it is written in such 
+a way that it cannot be easily restructured in place. Your final code does not have to 
+be as fully featured as the original, but it should have similar basic characteristics.
+
+Be sure to retain a copy of the original code for comparison. Consider incorporating
+tests in both versions so that you can tell if your new code behaves the same as the old.
+
+### Option #3: Start a New Code
+
+If you don't have research code for #1 or #2, write something new from scratch. 
+
+It will help to outline exactly what you want your code to do before you set out, consider 
+writing out a skeleton first and then filling in details after. 
+
+If you are having trouble thinking about ideas for what you could work on, let me know
+and we can discuss.
+
 
 ## Tasks
+
+Given the `option` you selected above, please complete the following tasks.
 
 ### Task 1: Implement **all** of the following in your code 
 
 1. **PEP-8 Formatting**: Intuitive variable names, descriptive comments, elaboration where necessary, 
-appropriate case (camel vs. snake), syntax, line limits. Remember these are *guidelines*, not rules, **consistency** is the most
-important thing.
+appropriate case (camel vs. snake), syntax, line limits etc.. Remember these are *guidelines*, not rules, **consistency** is the most important thing. If you stray from convention please reflect, in words, on why.
 2. **Version Control (Local and Remote):** Commit small and often. Don't do 3 hours of work and then commit
-one big change that says *"my code"*. This forces you to work on one definable piece at a time. Get into the habit of 
-committing changes before moving onto the next piece.
-3. **Functions**: Think about the acronym DRY (*Don't Repeat Yourself*). Keep an eye out for: repeated code blocks, pieces of code that would benefit from isolation and organization, long winded runs of code; functions fall out naturally.
+one big change that says *"my changes"*. Work on one definable piece at a time and get into the habit of 
+committing changes with reasonable commit messages before moving onto the next piece.
+3. **Functions**: Think about the acronym DRY (*Don't Repeat Yourself*). Keep an eye out for: repeated code blocks, pieces of code that would benefit from isolation and organization, long winded runs of code.
 4. **Documentation**: At a minimum, a doc-string at the top of your code explaining what the code does,
 its inputs and outputs, and how to use the code. If you need more tools for explanation, like tables, figures, then consider a README file.
 5. **Accessibility**: Anyone in our class should be able to look at your code and (without consulting with you) be able to understand what it does, download/install it, run an example, and evaluate whether or not it is "working". This may require having an example script, or example data, associated with the code .
@@ -51,42 +99,3 @@ For the other(s), reflect, on how you would implement it with words and pseudo c
 9. **Testing**: This can be as simple as test functions which ensure functions, code blocks, parameters, outputs, etc. behave as expected. This can also be `assert` statements throughout your code that check behavior and keep things on the rails. The most advanced application of this would be to use a dedicated testing package like `Pytest`. 
 10. **Branching Development**: Use a branch to develop a feature and then merge it back into your main branch. This is especially useful if you have a code that works and you don't want to break existing functionality. Think of this as the version control  approach of creating a copy of your file.
 
-
-## Options
-
-Please choose **one** of the three options and following the Tasks and Instructions above. If you think of a 
-mysterious fourth option, feel free to run it by me.
-
-### Option 1: Modify Existing Code
-
-Take your existing research code and improve it. Re-organizing the structure with
-functions and classes, changing the syntax, writing for generalizability, 
-improving for speed. 
-
-Be sure to commit your code before you start making changes and provide me a link
-to the commit where you started making your changes. Consider branch development
-and committing small and often to ensure you can get back to a workign state.
-
-### Option 2: Re-write Existing Code
-
-Take your existing research code and start over from scratch. This is similar to 
-1 except you would be starting an entirely new file and building up the same 
-functionality in a new package. You might consider this option if you wanted to
-e.g., implement everything in Classes, but the old code is not written in such 
-a way that it can be easily restructured in place.
-
-Be sure to retain a copy of the original code for comparison. Consider incorporating
-test functions in both versions so that you can tell if your new code behaves the same
-as the old one.
-
-### Option 3: Start a New Code
-
-If you don't have research code that you are enthused about working on, consider 
-writing something new from scratch. Here it will help to outline exactly what you
-want your code to do before you set out, consider writing out a skeleton first and then filling 
-in details after. 
-
-If you are having trouble thinking about ideas for what you could work on, let me know
-and we can discuss, I'm sure we can find something useful and interesting for you,
-even if it only becomes a small toy problem, it's still helpful that it's connected to your
-own research.
