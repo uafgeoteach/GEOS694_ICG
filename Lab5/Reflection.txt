@@ -1,0 +1,83 @@
+# LAB 5: Parallel Python
+
+
+
+### Task 1: Serial Code
+
+#### Reflection
+- Is this task embarassingly parallel? Why or why not?
+  Yes, because each x_i, y_i, sigma calculation is independent of the others.  Breaking it down would be pretty simple. 
+
+- Is this task IO-bound or CPU-bound? Why? 
+  This is CPU-bound because the majority of time is spent on calculations rather than passing data around.
+
+- What approach do we need to solve this problem, multithreading or multiprocessing?
+  Multiprocessing looks like the best way to fix this, where we split the work among multiple cores.
+
+- What can you change about the problem to make it the other type? (i.e., if you chose multithreading, what would be required to make it a multiprocess problem)
+  If the problem involved pulling the data from a database instead of producing it 'in-house', that would make it a multithreading problem.
+---
+
+### Task 2: Easy Parallel
+
+#### Reflection
+- Was the total elapsed time to run in parallel shorter or longer than serial, why?
+  Yes, probably because it had to plot everything four times instead of only once.
+- What would need to change about the problem to get a shorter parallel compute time?
+  The problem would need to be more computationally intensive, and it would need to be plotted only once.
+---
+
+### Task 3: Concurrent Futures
+
+#### Reflection
+- Was it worth the manual labor of rewriting your code to fit into this paradigm to get the speedup?
+  Not in terms of runtime, at least.  But this problem could easily be large enough to make this effort worthwhile.  And now I'm better equipped to do this with my own embarrassingly parallel code!
+--- 
+
+### Task 4: Scaling
+- Note down the serial runtime in seconds
+  STEP = 0.0002, elapsed = 51 s (5 cores)
+  STEP = 0.0002, elapsed = 26 s (20 cores)
+- Now run change the value of `STEP` in `2d_gaussian_concurrent.py` and start at `max_workers==1`
+- Note down the runtime, and begin incrementing `max_workers` by 1.
+- Once you get past the total number of cores on your laptop (`os.get_cpu()`) you can start incrementing by larger values. Try to find the point where the code crashes.
+  It crashes somewhere around 20,000 cores, 1,000x what my system physically has.
+
+- Make a plot of `max_workers` versus runtime [s]. 
+
+#### Reflection
+- What behavior do you observe in your scaling?
+  Running on more cores speeds it up, so long as you have more cores to run it.
+
+- Are there diminishing returns for scaling up?
+  Yes
+
+- What limitations are we running into when we throw more and more cores at it, going past the physical number of cores on our machine?
+  Cores start needing to run things in series instead of in parallel, so we start making each core run these computations twice, three times, etc.  This begins to counteract the benefits of running in parallel, and the script takes longer to run to completion.
+
+
+---
+### Task 5: Final Reflection
+
+- Give 2 examples of geoscience/geophysics problems that are embarassingly parallel
+1. Plotting multiple seismic waveforms
+2. Calculating travel paths for multiple earthquake events (or to multiple stations)
+
+- Give 1 example of a geoscience/geophysics problem that cannot be parallelized
+
+
+- Is parallelizing your code worth it for already-fast calculations?
+  Definitely not.
+
+- Describe a situation when you would not want to implement multiprocessing in your problem
+  The Haversine conversion between degree distance and surface distance is a good example, it runs pretty quickly so there isn't much point to calculating it in parallel.  I am running it for thousands of coordinate pairs and it takes barely any time at all.
+
+- So far we have solved problems on a single computer with multiple cores. Think about and describe how this might change when we run on a cluster/high performance computer
+    - Hint: You can think of a cluster as multiple laptops sitting next to each other, that are all hooked up to the same external harddrive.
+    - Think about this in terms of accessing memory, sharing information etc.
+  This can allow us to parallelize to a much higher degree, allocating hundreds of cores to work towards the computation.  This sounds a bit like what I've seen people do with Chinook, and I doubt that's a coincidence.
+
+Please Submit:
+- Each of the codes you have written in Tasks 1-3 (upload to your fork of the class GitHub)
+- Please include in your GitHub upload: Figures from Tasks 2 and 4.
+- Reflections (submitted in Canvas text box)
