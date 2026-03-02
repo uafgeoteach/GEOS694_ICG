@@ -56,6 +56,7 @@ def sys_argv():
 
 def sys_argv_alternative():
     """Python allows for dynamic list expansion in the input statement"""
+    import ipdb;ipdb.set_trace()
     plot_cosx_force_type(*sys.argv[1:])
 
 
@@ -142,6 +143,7 @@ files, some common ones are 1) text files, 2) JSON, 3) YAML, 4) TOML
 def yaml_strategy():
     with open("example_input.yaml", "r") as f:
         params = yaml.load(f, Loader=yaml.SafeLoader)
+    breakpoint()
 
     plot_cosx_multi(**params)
 
@@ -157,5 +159,5 @@ if __name__ == "__main__":
     # sys_argv_alternative()
     # input_strategy()
     # argparser_strategy()
-    # yaml_strategy()
-    py_strategy()
+    yaml_strategy()
+    #py_strategy()

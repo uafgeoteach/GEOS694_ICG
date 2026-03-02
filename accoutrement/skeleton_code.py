@@ -30,7 +30,7 @@ def read_file(fid, expected_len=100):
     
     # Check appropriate file length
     assert(len(data) == expected_len), \
-        f"file length inconsisten: {len(data)} != {expected_len}"
+        f"file length inconsistent: {len(data)} != {expected_len}"
     return data
 
 
@@ -63,12 +63,21 @@ def plot_stuff(data):
 
 
 def main():
+    """
+    Description of how all your functions come together in a main workflow
+    """
     fid = sys.argv[1] 
     modifier = sys.argv[2]
+    example = sys.argv[3]
 
-    data = read_file(fid)
+    if example:
+        data = range(0, 100, 1)
+    else:
+        data = read_file(fid)
+    
     modified_data = do_stuff(data, modifier)
     plot_stuff(modified_data)
+
 
 if __name__ == "__main__":
     main()

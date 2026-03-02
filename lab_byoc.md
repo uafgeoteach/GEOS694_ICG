@@ -75,27 +75,32 @@ committing changes with reasonable commit messages before moving onto the next p
 3. **Functions**: Think about the acronym DRY (*Don't Repeat Yourself*). Keep an eye out for: repeated code blocks, pieces of code that would benefit from isolation and organization, long winded runs of code.
 4. **Documentation**: At a minimum, a doc-string at the top of your code explaining what the code does,
 its inputs and outputs, and how to use the code. If you need more tools for explanation, like tables, figures, then consider a README file.
-5. **Accessibility**: Anyone in our class should be able to look at your code and (without consulting with you) be able to understand what it does, download/install it, run an example, and evaluate whether or not it is "working". This may require having an example script, or example data, associated with the code .
+5. **Accessibility**: Anyone in our class should be able to look at your code and (without consulting with you) be able to understand what it does, download/install it, run an example, and evaluate whether or not it is "working". This may require having an example script, or example data, associated with the code.
 
 ### Task 2: Implement *at least* 1 of the following in your code 
 
-For the other(s), reflect, on how you would implement it with words and pseudo code. Or, why you did not/would not implement.
+For the other(s) that you do not implement, reflect on how you would implement it with words and pseudo code. Or, why you did not/would not implement.
 
-> Note: "Not enough time", "too difficult" are not good reflections. Think about whether this would actually be useful in your research code. If you don't know whether it will be, take that as a challenge to try. If you think it will be, then reflect on how you might implement it using words and pseudocode.
+> Note: "Not enough time", "too difficult" are not good reflections. Think about whether this would actually be useful in your research code. If you don't know whether it will be, take that as a challenge to try. 
 
-6. **Classes**: Remember, classes bundle data and functions. If you find yourself continually operating, accessing and modifying a set of data, or passing the same collection of input parameters between functions, then a class may be a useful abstraction.
-7. **Parallel/Concurrency**: If you notice your problem is parallelizable, or embarassingly parallel, try to structure your code so that it can be parallelized. This does not have to use a complex package like `concurrent.futures`, the bash, Python, or multiple-terminal approach are all valid, but require structuring your code in such a way that you can exploit these features.
+6. **Classes**: Classes bundle data and functions. If you find yourself continually operating, accessing and modifying a set of data, or passing the same collection of input parameters between functions, then a class may be a useful abstraction. 
+    - Note that your entire code does not have to be a Class. Like functions, Classes can abstract small independent units that are then utilized by the rest of the code.
+7. **Parallel/Concurrency**: If your problem is parallelizable try to structure your code so that it leverages this. You do not have to use a complex package like `concurrent.futures` if you don't want to, you may also take the Bash script, Python subprocess, or multiple-terminal approach. Ensure that your documentation conveys the approach and use case clearly.
 
 ### Task 3: Implement *at least* 1 of the following in your code 
 
-For the other(s), reflect, on how you would implement it with words and pseudo code. Or, why you did not/would not implement.
+For the other(s) that you do not implement, reflect on how you would implement it with words and pseudo code. Or, why you did not/would not implement.
 
-8. **Parameter Input System**: Most of our code can benefit from quick modifications from the user. Implement a parameter input system that allows for this, using any of the following (no `sys.arg`!): 
-    - parameter files
+8. **Parameter Input System**: Most of our code can benefit from quick modifications from the user. Implement a parameter input system that allows for this, using any of the following (no `sys.argv`!): 
+    - parameter file (e.g., .py, .txt, .json, .yaml, .toml)
     - argparser
     - input()
     > Note: This ties into (5) above, a random user needs to understand how they call your code and what each of the 
     parameters is, and whether their order, case, type is important. 
-9. **Testing**: This can be as simple as test functions which ensure functions, code blocks, parameters, outputs, etc. behave as expected. This can also be `assert` statements throughout your code that check behavior and keep things on the rails. The most advanced application of this would be to use a dedicated testing package like `Pytest`. 
-10. **Branching Development**: Use a branch to develop a feature and then merge it back into your main branch. This is especially useful if you have a code that works and you don't want to break existing functionality. Think of this as the version control  approach of creating a copy of your file.
-
+9. **State Saving**: Results saving and re-loading. We have not covered this in class yet, but
+one way to make work faster and more reproducible is to build in capabilities to save results, and read them in
+later, rather than re-process you data each time. You can use things like text files, domain specific file formats, 
+binary files (.npy) etc. to do so. Create a system that allows you to save and re-load results or working state
+to help speed up your research.
+10. **Testing**: This can be as simple as checks throughout your code to ensure functions, code blocks, parameters, outputs, etc. behave as expected. You may use logic blocks, `assert` statements, try-except etc. A more advanced application of this would be to use a dedicated testing package like `unittest` or `Pytest`, which we have not covered (if you would like to go this route I can help you through). 
+11. **Branching Development**: Use a branch to develop a feature and then merge it back into your main branch. This is especially useful if you have a code that works and you don't want to break existing functionality. Think of this as the version control approach of creating a copy of your file.
