@@ -43,15 +43,15 @@ Here you will get familiar with the directory structure and common SLURM command
 
 1. SSH onto login node `Chinook03` or `Chinook04` **and** change directory: `cd /`
 
-> - 1A: Based on the directories here, what are the names of the available file systems?
+> - 1A: Based on the directories here, what are the names of the available file systems, and what types of file systems are they? (Lustre, archive, normal)
 2. Change directory to `/import/c1/GEOS694/$USER`
 > - 1B: What filesystem are you on here in the class project directory (Lustre, archive, normal)? Is this the same as your home directory (`~`)?
 3. Run the command: `show_storage`
 > - 1C: What does this command do?  
 > - 1D: What is the maximum allowed storage in the GEOS694 `/scratch` and `/archive` directories?
+> - 1E: What do you think is the difference between `Soft_GiB` and `Hard_GiB`?  
 4. Go to the [RCS Chinook documentation](https://uaf-rcs.gitbook.io/uaf-rcs-hpc-docs/hpc) and go to the page on `Available Partitions`
-> - 1E: Describe different scenarios for why you would use the following partitions: debug, t1small, t1standard, bio (don't just copy-paste what the 'Purpose' is, describe an actual research task that might require each of these partitions)
-> - 1F: What do you think is the difference between `Soft_GiB` and `Hard_GiB`?  
+> - 1F: Describe different scenarios for why you would use the following partitions: debug, t1small, t1standard, bio (don't just copy-paste what the 'Purpose' is, describe an actual research task that might require each of these partitions)
 5. Run the command: `squeue`
 > - 1G: What does this command do?  
 > - 1H: Name and briefly describe each of the columns shown in the `squeue` output. Use values from one of rows in the queue to make your explanation more specific.
@@ -126,7 +126,7 @@ In the body of `my_batch_script.sh`, have the script run the following **in orde
 
 ### Questions
 - 2A: What nodes did your job run on? (give node numbers)
-- 2B: How many CPUs did each node have?
+- 2B: How many CPUs does each node have?
 - 2C: Did your job time out based on the walltime?
 - 2D: Copy-paste the output of `sacct -j <JOB_ID>`, and explain why you have the number of job steps you do, and what each job step refers to.
 
