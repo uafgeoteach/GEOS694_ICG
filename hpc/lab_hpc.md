@@ -72,7 +72,7 @@ Here you will get familiar with the directory structure and common SLURM command
 > - 1Q: What is the compile date of this version of Python? (this is given when you call `python`)
 10. Start up an interactive job on the debug node: `srun -p debug --nodes=1 --exclusive --pty /bin/bash`
 > - 1R: Are all filesystems available to you on the compute node?
-11. Run command `squeue`:
+11. Run command `squeue`
 > - 1S: How many nodes were you allocated for this interactive job? What are their node numbers?
 11. Run the command: `scontrol show nodes <node_number>` for the node number(s) you found in the last question
 > - 1T: How many cores and how much memory are available on this node?
