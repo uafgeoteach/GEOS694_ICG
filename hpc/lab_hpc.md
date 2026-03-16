@@ -35,17 +35,14 @@ By the end of this lab you should know:
 - Linux manual pages:  `man <program>` 
 - Help messages: `<program> -h`
 
-
-
 ## Task 1: Common Commands Chinook & SLURM [1 pt]
 Here you will get familiar with the directory structure and common SLURM commands for navigating and using Chinook and the SLURM job scheduling system. Remember this is just a Linux system with a few extra bells and whistles, so your experience navigating your laptop translates.
 
 
-1. SSH onto login node `Chinook03` or `Chinook04` **and** change directory: `cd /`
-
+1. SSH onto login node `Chinook03` or `Chinook04` **and** change directory: `cd /`. Use `ls -l /import/*` to list out all of the filesystems attached to Chinook. Referencing the [Chinook documentation on filesystems](https://uaf-rcs.gitbook.io/uaf-rcs-hpc-docs/available-filesystems/available-filesystems), answer the following:
 > - 1A: Based on the directories here, what are the names of the available file systems, and what types of file systems are they? (Lustre, archive, normal)
 2. Change directory to `/import/c1/GEOS694/$USER`
-> - 1B: What filesystem are you on here in the class project directory (Lustre, archive, normal)? Is this the same as your home directory (`~`)?
+> - 1B: What filesystem are you on here in the class project directory (Lustre, archive, normal)? Is this the same as your home directory (`cd ~`)?
 3. Run the command: `show_storage`
 > - 1C: What does this command do?  
 > - 1D: What is the maximum allowed storage in the GEOS694 `/scratch` and `/archive` directories?
@@ -64,17 +61,18 @@ Here you will get familiar with the directory structure and common SLURM command
 > - 1M: How many total nodes are available on partition `t1standard` that are not down or drained? (Node State Codes are [listed here](https://slurm.schedmd.com/sinfo.html#SECTION_NODE-STATE-CODES))
 8. Run command: `module avail`
 > - 1N: Describe what the output of this command tells you  
-> - 1O: Looking through the list, what versions of Python are available by default on Chinook through `modules`?
+9. Run command: `module spider python`
+> - 1O: Looking through the output, what versions of Python are available by default on Chinook through `modules`?
 9. Run command: `module purge` 
 - This will unload all modules (you can check this worked by running `module list` and confirming that it says 'No modules loaded')
-- Load the lowest version number Python. You will likely run into some intermediate issues, make sure to follow the provided tips. Confirm you correctly loaded this version of Python by typing `python`
-> - 1P: What (if any) intermediate modules did you need to download?
+- Load the lowest version number Python with `module load <PYTHON/VERSION>`. You will likely run into some intermediate issues, make sure to follow the provided tips. Confirm you correctly loaded this version of Python by typing `python`
+> - 1P: What (if any) intermediate modules did you need to load?
 > - 1Q: What is the compile date of this version of Python? (this is given when you call `python`)
 10. Start up an interactive job on the debug node: `srun -p debug --nodes=1 --exclusive --pty /bin/bash`
-> - 1R: Are all filesystems available to you on the compute node?
+> - 1R: Are all filesystems available to you on the compute node? Remember that we checked mounted filesystems in an earlier question, the same approach may give you different results now that you're on the compute node.
 11. Run command `squeue`
 > - 1S: How many nodes were you allocated for this interactive job? What are their node numbers?
-11. Run the command: `scontrol show nodes <node_number>` for the node number(s) you found in the last question
+11. Run the command: `scontrol show nodes <node_number>` for the node number(s) you found in the last question. Note that this won't actually work because of a command we ran earlier! Figure out how to re-load Slurm to get access to command `scontrol`.
 > - 1T: How many cores and how much memory are available on this node?
 12. Using the `JOBID` of your interactive job, run: `sacct -j <JOBID>`
 > - 1U: What does this command do?
