@@ -25,6 +25,9 @@ By the end of this lab you should know:
 - Please complete tasks and reflections, and submit reflections in Canvas submission box. Short answers for questions is okay.
 - Each Task is worth 1 point of the total lab. Each question will have equal weight to distribute that 1 point
 - Upload the script you create in `Task 2` to your class repository GitHub 
+- In `Task 2`, half of the point in this task will be for a correctly formatted SBATCH script, and the other half point will be for answered questions.
+- Becuase there are limited debug nodes on Chinook, there is a good chance the class will compete with each other for resources in many of the lab tasks. If you find the debug queue full, move onto other steps and check the queue regularly until you get access. These steps are short so students should be able to finish them relatively quickly, freeing up resources for others.
+
 
 ## References
 - [Class lecture](https://docs.google.com/presentation/d/1FdpiCo89N5pSayILo-aX3JQs2hbjQ0Kzlgb3KCgUKsA/edit?usp=sharing) (see references link on last slide, too)
@@ -32,7 +35,7 @@ By the end of this lab you should know:
 - Linux manual pages:  `man <program>` 
 - Help messages: `<program> -h`
 
----
+
 
 ## Task 1: Common Commands Chinook & SLURM [1 pt]
 Here you will get familiar with the directory structure and common SLURM commands for navigating and using Chinook and the SLURM job scheduling system. Remember this is just a Linux system with a few extra bells and whistles, so your experience navigating your laptop translates.
@@ -67,12 +70,6 @@ Here you will get familiar with the directory structure and common SLURM command
 - Load the lowest version number Python. You will likely run into some intermediate issues, make sure to follow the provided tips. Confirm you correctly loaded this version of Python by typing `python`
 > - 1P: What (if any) intermediate modules did you need to download?
 > - 1Q: What is the compile date of this version of Python? (this is given when you call `python`)
-
----
- **NOTE**: Becuase there are limited debug nodes on Chinook, there is a good chance the class will compete with each other for resources in the following steps. If you find the debug queue full, move onto the next task and check back in on this regularly until you can get access. These steps are short so students should be able to finish them relatively quickly to free up resources for others.
- 
- ---
-
 10. Start up an interactive job on the debug node: `srun -p debug --nodes=1 --exclusive --pty /bin/bash`
 > - 1R: Are all filesystems available to you on the compute node?
 11. Run command `squeue`:
@@ -89,11 +86,6 @@ Here you will get familiar with the directory structure and common SLURM command
 
 ## Task 2: Submitting your Own Job [1 pt]
 
-Still logged into Chinook, using a text editor, create a new file called `my_batch_script.sh`. Using references/Google/Stack Overflow, etc., figure out how to structure your batch script so that it enforces the following directives and provides the following output information. 
-
-
-Half of the point in this task will be for a correct SBATCH script, and the other half point will be for the questions below.
-
 ### References
 1. [SLURM Sbatch Manual](https://slurm.schedmd.com/sbatch.html)
 2. [RCS: Sbatch Documentation](https://uaf-rcs.gitbook.io/uaf-rcs-hpc-docs/using-batch/batch-scripts)
@@ -102,32 +94,35 @@ Half of the point in this task will be for a correct SBATCH script, and the othe
 
 ---
 
-### SBATCH Directives
+### Task
+1. Still logged into Chinook, using a text editor, create a new file called `my_batch_script.sh`. 
+2. Using references/Google/Stack Overflow, etc., figure out how to structure your batch script so that it enforces the following `SBATCH Directives` and runs the following `Commands.
+3. Run your job using the command `sbatch my_batch_script.sh`
+4. Check that your job is running using `squeue`
+5. Allow your job to finish
+6. Check the output file, which should be named how you specified in the same directory
+7. Answer the following `Questions` in your Canvas submission box
+8. Upload `my_batch_script.sh` to your class repository GitHub
+
+#### SBATCH Directives
+In the header of `my_batch_script.sh` enforce the following directives
 - Submit to the `debug` partition
 - Specifies that 2 task will be run
 - Requests 2 nodes
 - Has a job name: "hello world!"
-- Creates an output file that has the following structure `<JOB_ID>_<JOB_NAME>.out`
+- Creates an output file that has the following name format: `<JOB_ID>_<JOB_NAME>.out`
 - Has a maximum walltime of 5 seconds
 
-### Commands
-In the body of the script, have the script run the following in order. 
+#### Commands
+In the body of `my_batch_script.sh`, have the script run the following **in order**: 
 
-> Note: Run all of these commands using `srun`, see reference 4 above for an example.
+> Note: Run all of these commands using `srun`, see reference 4 above for an example or ask me if this is confusing.
  
 1. Prints "Hello"
 2. Print the SLURM environment variable that lists the nodes that this script is run on
 3. Print the SLURM environment variable that lists the cpus for each node that this script is run on
 3. Sleeps for 10 seconds
 4. Prints "World!" 
-
-### Task
-- Run your job using the command `sbatch my_batch_script.sh`
-- Check that your job is running using `squeue`
-- Allow your job to finish
-- Check the output file, which should be named how you specified in the same directory
-- Answer the following questions in your Canvas submission box
-- Upload `my_batch_script.sh` to your class repository GitHub
 
 ### Questions
 - 2A: What nodes did your job run on? (give node numbers)
