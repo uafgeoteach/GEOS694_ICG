@@ -112,7 +112,7 @@ In the header of `my_batch_script.sh` enforce the following directives
 - Has a maximum walltime of 5 seconds
 
 #### Commands
-In the body of `my_batch_script.sh`, have the script run the following **in order**: 
+In the body of `my_batch_script.sh`, have the script run the following **in order**. These should be a sequence of Bash commands: 
 
 > Note: Run all of these commands using `srun`, see reference 4 above for an example or ask me if this is confusing.
  

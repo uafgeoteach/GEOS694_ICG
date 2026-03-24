@@ -159,5 +159,5 @@ if __name__ == "__main__":
     # sys_argv_alternative()
     # input_strategy()
     # argparser_strategy()
-    yaml_strategy()
-    #py_strategy()
+    # yaml_strategy()
+    py_strategy()
