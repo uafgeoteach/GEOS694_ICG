@@ -33,15 +33,15 @@ The homework will have you get set up on Chinook so that you can run your own Py
     - Modify the output directive to `$SBATCH --output=%j_%a.out`
     - Run your script again
 
-- **QUESTION 2:** What does the array function do?
-- **QUESTION 3:** How could you use the `array` directive to do multi-node multi-processor calculations? Discuss if and how you modify `is_prime.py`, your SBATCH script, or both.
+> - **QUESTION 2:** What does the array function do?
+> - **QUESTION 3:** How could you use the `array` directive to do multi-node multi-processor calculations? Discuss if and how you modify `is_prime.py`, your SBATCH script, or both.
 
 ### Run your own script
 7. Pick a research script that you have and write an sbatch script to run it on the `debug` node
     - **REFLECTION 4**: Does your script take advantage of all the cores on the node?
     - **REFLECTION 5**: How could you modify your script to run faster on Chinook (CPU or GPU cluster)? Be somewhat specific (i.e., "I could parallelize the calculation in the for loop of lines X-Y", or "I could replace the NumPy operations in Lines X-Y with CuPy")
 
-**ACTION**: Upload the SBATCH script from 7 to your personal GitHub from Chinook. You should already have SSH keys setup so this should be straightforward. 
+> **ACTION**: Upload the SBATCH script from 7 to your personal GitHub from Chinook. You should already have SSH keys setup so this should be straightforward. 
 
 
 
