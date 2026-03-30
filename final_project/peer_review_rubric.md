@@ -11,3 +11,10 @@
 - [ ] Task #1 Selected (note which task is selected)
 - [ ] Task #2 Selected (note which task is selected)
 
+### Reflection Questions
+Please answer these questions based only on what you see in the GitHub repository, or what you can glean through opening issues.
+Pretend you are an anonymous reviewer who has been asked to evaluate this repository for publication and open-access considerations.
+
+1. What does this code do?
+2. How does this code do it?
+3. ...
