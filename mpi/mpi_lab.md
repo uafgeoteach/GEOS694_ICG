@@ -6,7 +6,7 @@ The following lab assignment will give you some toy problems to practice impleme
 
 For each Toy Problem prompt below, create a separate Python program to accomplish the given task. Check out the `references` listed below for code snippet examples and reference information.
 
-**When you are finished, upload all your scripts to your class repository under the directory `mpi_lab`.**
+**When you are finished, upload all your scripts to your class repository under the directory `mpi_lab` and provide a link to your GitHub directory in Canvas.**
 
 > *Note: Some of these Toy Problems were inspired by exercises found online and listed in the Lecture Slide references, some were prompted from ChatGPT starting with prompt "Can you provide simple python toy example problems to practice using Mpi4Py with emphasis on point-to-point and collective communication?".*
 
