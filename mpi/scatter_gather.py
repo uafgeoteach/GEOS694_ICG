@@ -1,3 +1,8 @@
+"""
+scatter-gather example using lowercase 's' and 'g' scatter and gather which work
+on Python objects through pickling. Remember that this is slower than the 
+capital 'S' and 'G' versions. Syntax is also different.
+"""
 from mpi4py import MPI
 import numpy as np
 
@@ -11,20 +16,14 @@ num_data = 100000000
 data = None
 if rank == 0:
     data = np.random.normal(loc=10, scale=5, size=num_data)
+    data = np.array_split(data, size)  # `scatter` assumes data length == `size`
 
-# Initialize empty arrays to receive the partial data
-partial = np.empty(int(num_data/size), dtype='d')
-
-# Send data to the other workers
-comm.Scatter(data, partial, root=0)
-
-# Prepare the reduced array to receive the processed data from each rank
-reduced = None
-if rank == 0:
-    reduced = np.empty(size, dtype='d')
+# Send Python object to the other workers as pickle
+partial = comm.scatter(data, root=0)
+partial_average = np.average(partial)
 
 # Average the partial arrays, and then gather them to RANK_0
-comm.Gather(np.average(partial), reduced, root=0)
+reduced = comm.gather(partial_average, root=0)
 
 if rank == 0:
     print('Full Average:', np.average(reduced))

@@ -56,7 +56,7 @@ Here you will use `scatter` and `gather` to distribute work and recombine result
     The sum of 1-N is X == Y.
     ```
 - Where X is the distributed sum value, and Y is the check value.
-- Check that this works for values 10, 1000, 10000.
+- Check that this works for values 101, 1001, 10001. 
 
 
 ### 3. Global Max 
@@ -96,8 +96,8 @@ Our goal is to parallelize the matrix-vector operation by splitting the problem 
 - Use `scatter` to distribute the **rows** of $A$ to all processes
 - Use `bcast` (broadcast) to distribute the entire vector $x$ to all processes
 - Each process should compute their piece of the vector: $y_n = A_n \cdot x $
-- Use `barrier` to ensure that all processes have finished their calculation before proceeding
-- Use `Igather` to do non-blocking collection of all pieces of $y$ on the root process
+- Use `Barrier` to ensure that all processes have finished their calculation before proceeding
+- Use `Igather` and `Wait` to do non-blocking collection of all pieces of $y$ on the root process
 - Have Root print out the resulting matrix-vector operation and result. The output message should look something like this:
     ```
     A_11 ... A_1N  * x_1 = y_1
