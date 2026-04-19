@@ -1,4 +1,4 @@
-## Lab: Making Python Fast — A Practical Guide to JIT and Cython
+## Lab: Making Python Fast — Time Series Analysis Edition
 
 **Duration:** 2 hours | **Level:** Graduate | **Prerequisites:** Basic Python and NumPy familiarity
 
@@ -6,26 +6,19 @@
 
 ### Overview
 
-You will take a single slow geoscience computation and progressively speed it up using three approaches: pure Python, Numba JIT, and Cython. You'll measure the speedup at each step and reflect on whether the performance gain was worth the effort. By the end you should have an intuition for *when* to reach for these tools in your own research.
+You will take a common geoscience time series computation and progressively speed it up using NumPy vectorization, Numba JIT, and Cython. The computation — a **running climatological anomaly with a centered moving window** — is the kind of calculation that appears constantly in geoscience research and is deliberately chosen because it *cannot* be trivially vectorized, making it a realistic case for JIT and Cython.
 
 ---
 
 ### Setup (10 minutes)
 
-Create a fresh directory and install the required packages:
-
 ```bash
-mkdir python_speed_lab && cd python_speed_lab
-pip install numba cython numpy matplotlib jupyter
-```
-
-All exercises will be done in a single Jupyter notebook. Create it:
-
-```bash
+mkdir timeseries_speed_lab && cd timeseries_speed_lab
+pip install numba cython numpy matplotlib jupyter scipy
 jupyter notebook lab.ipynb
 ```
 
-At the top of your notebook, add this timing helper that you'll reuse throughout:
+At the top of your notebook:
 
 ```python
 import numpy as np
@@ -45,182 +38,211 @@ def benchmark(func, *args, repeats=5):
 
 ---
 
-### The Problem: Computing a Heat Index Field
+### The Problem: Rolling Z-Score Anomaly
 
-You have a 2D grid of temperature and relative humidity values — think of a reanalysis field over a continent. Your task is to compute the **Heat Index** at every grid point using a simplified version of the NOAA formula, which involves a polynomial with cross terms and is deliberately *not* expressible as a simple NumPy vectorized operation in its full form.
+Given a long daily temperature time series (think 100 years of station data, or a long climate model run), compute at every point `i` the **z-score anomaly** relative to a local window:
+
+```
+anomaly[i] = (x[i] - mean(x[i-w : i+w])) / std(x[i-w : i+w])
+```
+
+where `w` is the half-window size (e.g. 15 days on either side). This is a standard way to remove seasonal cycles and identify extreme events.
+
+This is harder to vectorize than it looks because:
+- Each output point requires a *different* slice of the input
+- Edge handling (the start and end of the series) requires special treatment
+- The window mean and std must be recomputed at every step
 
 ```python
 # --- Paste this into your notebook ---
 
-def heat_index_point(T, RH):
-    """
-    Compute heat index at a single grid point.
-    T in Fahrenheit, RH in percent (0-100).
-    Simplified Rothfusz regression.
-    """
-    HI = (-42.379
-          + 2.04901523 * T
-          + 10.14333127 * RH
-          - 0.22475541 * T * RH
-          - 0.00683783 * T * T
-          - 0.05481717 * RH * RH
-          + 0.00122874 * T * T * RH
-          + 0.00085282 * T * RH * RH
-          - 0.00000199 * T * T * RH * RH)
-    return HI
-
-# Generate a realistic test grid — 500x500 points
 np.random.seed(42)
-NLAT, NLON = 500, 500
-temperature = np.random.uniform(90, 110, (NLAT, NLON))   # degrees F
-humidity    = np.random.uniform(40, 90,  (NLAT, NLON))   # percent
+N = 500_000          # 500,000 time steps — roughly 1,370 years of daily data
+                     # or one long climate model run
+WINDOW = 15          # 15-day half-window (30-day centered window)
+
+# Synthetic temperature signal: seasonal cycle + noise + slow trend
+t = np.arange(N)
+signal = (10 * np.sin(2 * np.pi * t / 365.25)   # seasonal cycle
+          + 0.001 * t / 365.25                    # slow warming trend
+          + np.random.normal(0, 1, N))            # daily noise
+
+signal = signal.astype(np.float64)
 ```
 
 ---
 
 ### Exercise 1: Pure Python Baseline (20 minutes)
 
-**Task:** Implement the heat index computation as a nested loop over the grid. This is the "naive" approach a researcher might write first.
-
 ```python
-def heat_index_python(temp, rh):
-    nlat, nlon = temp.shape
-    result = np.empty((nlat, nlon))
-    for i in range(nlat):
-        for j in range(nlon):
-            result[i, j] = heat_index_point(temp[i, j], rh[i, j])
+def rolling_zscore_python(x, w):
+    n = len(x)
+    result = np.full(n, np.nan)
+    for i in range(w, n - w):
+        window = x[i - w: i + w + 1]
+        mu  = sum(window) / len(window)
+        var = sum((v - mu) ** 2 for v in window) / len(window)
+        std = var ** 0.5
+        if std > 0:
+            result[i] = (x[i] - mu) / std
     return result
 
-# Benchmark it
-time_python, result_python = benchmark(heat_index_python, temperature, humidity)
+time_python, result_python = benchmark(rolling_zscore_python, signal, WINDOW)
 print(f"Pure Python: {time_python:.3f} seconds")
 ```
 
 Record your result. This is your **baseline**.
 
 **Checkpoint questions before moving on:**
-- How long did it take? Does that feel fast or slow to you?
-- If this grid were 5000×5000 (roughly global reanalysis at 0.1° resolution), how long would you expect it to take? Make a prediction.
+- How long did it take? If your dataset were 50 climate model ensemble members each with 500,000 time steps, how long would processing all of them take at this speed?
+- Look at the inner loop. How many Python operations happen per time step? Try counting them — each `sum()`, comparison, and arithmetic operation is a separate CPython bytecode dispatch.
 
 ---
 
-### Exercise 2: NumPy Vectorization (15 minutes)
+### Exercise 2: NumPy Vectorization (20 minutes)
 
-Before reaching for Numba or Cython, the first question is always: *can I just vectorize it?* Here the formula is a polynomial — it can be expressed directly on arrays.
+NumPy provides `np.lib.stride_tricks` and sliding window tools, but rolling z-scores have a subtlety: you need the mean and std of a *different slice* for each point. The standard approach is `np.convolve` for the mean and a cumulative sum trick for the variance.
 
-**Task:** Rewrite `heat_index_python` to operate on entire arrays at once using NumPy, with no Python loops.
+**Task:** Implement a vectorized version using NumPy. A clean approach uses `np.cumsum` to compute rolling sums in O(n) without a loop:
 
 ```python
-def heat_index_numpy(temp, rh):
-    T, RH = temp, rh
-    HI = (-42.379
-          + 2.04901523 * T
-          + 10.14333127 * RH
-          # ... complete the formula yourself
-         )
-    return HI
+def rolling_zscore_numpy(x, w):
+    n = len(x)
+    result = np.full(n, np.nan)
+    
+    # Use cumsum to compute rolling sums efficiently
+    cs    = np.cumsum(x)
+    cs_sq = np.cumsum(x ** 2)
+    
+    # For each point i, sum(x[i-w:i+w+1]) = cs[i+w] - cs[i-w-1]
+    win_size = 2 * w + 1
+    
+    i_start = w
+    i_end   = n - w
+    
+    left  = np.arange(i_start - w - 1, i_end - w - 1)
+    right = np.arange(i_start + w,     i_end + w)
+    
+    sum_x   = cs[right]    - np.where(left >= 0, cs[left], 0)
+    sum_x2  = cs_sq[right] - np.where(left >= 0, cs_sq[left], 0)
+    
+    mu  = sum_x / win_size
+    var = sum_x2 / win_size - mu ** 2
+    var = np.maximum(var, 0)           # guard against floating point negatives
+    std = np.sqrt(var)
+    
+    valid = std > 0
+    idxs  = np.arange(i_start, i_end)
+    result[idxs[valid]] = (x[idxs[valid]] - mu[valid]) / std[valid]
+    
+    return result
 
-time_numpy, result_numpy = benchmark(heat_index_numpy, temperature, humidity)
-print(f"NumPy:       {time_numpy:.3f} seconds")
+time_numpy, result_numpy = benchmark(rolling_zscore_numpy, signal, WINDOW)
+print(f"NumPy:   {time_numpy:.3f} seconds")
 print(f"Speedup vs Python: {time_python / time_numpy:.1f}x")
 
-# Verify correctness
-np.testing.assert_allclose(result_python, result_numpy, rtol=1e-5)
+# Verify — compare only non-nan values
+mask = ~np.isnan(result_python) & ~np.isnan(result_numpy)
+np.testing.assert_allclose(result_python[mask], result_numpy[mask], rtol=1e-5)
 print("Results match.")
 ```
 
 **Checkpoint questions:**
-- How much faster is NumPy? Were you surprised?
-- How long did the rewrite take you? Was it straightforward?
-- NumPy vectorization isn't always possible. Can you think of a geoscience calculation that *can't* be expressed this way? (Hint: think about anything where the value at one grid point depends on a neighbor, or involves a conditional that varies per point.)
+- How much faster is NumPy? Was it what you expected?
+- The cumsum trick is not obvious — it took real mathematical insight to reformulate the loop this way. How long did it take you to understand it? Would you have arrived at it yourself under time pressure?
+- This version allocates several large intermediate arrays (`cs`, `cs_sq`, `sum_x`, etc.). For very long time series or many ensemble members, could memory become a concern?
 
 ---
 
 ### Exercise 3: Numba JIT (20 minutes)
 
-Now apply Numba to the *original loop version* — no rewriting required.
+Now apply Numba to a clean loop version — no mathematical reformulation needed:
 
 ```python
 from numba import jit
 
 @jit(nopython=True)
-def heat_index_numba(temp, rh):
-    nlat, nlon = temp.shape
-    result = np.empty((nlat, nlon))
-    for i in range(nlat):
-        for j in range(nlon):
-            T  = temp[i, j]
-            RH = rh[i, j]
-            result[i, j] = (-42.379
-                            + 2.04901523 * T
-                            + 10.14333127 * RH
-                            - 0.22475541 * T * RH
-                            - 0.00683783 * T * T
-                            - 0.05481717 * RH * RH
-                            + 0.00122874 * T * T * RH
-                            + 0.00085282 * T * RH * RH
-                            - 0.00000199 * T * T * RH * RH)
+def rolling_zscore_numba(x, w):
+    n = len(x)
+    result = np.full(n, np.nan)
+    win_size = 2 * w + 1
+    
+    for i in range(w, n - w):
+        mu = 0.0
+        for j in range(i - w, i + w + 1):
+            mu += x[j]
+        mu /= win_size
+        
+        var = 0.0
+        for j in range(i - w, i + w + 1):
+            diff = x[j] - mu
+            var += diff * diff
+        var /= win_size
+        
+        if var > 0:
+            result[i] = (x[i] - mu) / var ** 0.5
+    
     return result
 
-# First call triggers compilation — time it separately
+# Warmup — first call compiles
 start = time.perf_counter()
-_ = heat_index_numba(temperature, humidity)
+_ = rolling_zscore_numba(signal, WINDOW)
 compile_time = time.perf_counter() - start
 print(f"Numba first call (includes compilation): {compile_time:.3f} seconds")
 
-# Now benchmark the compiled version
-time_numba, result_numba = benchmark(heat_index_numba, temperature, humidity)
-print(f"Numba (after warmup): {time_numba:.3f} seconds")
-print(f"Speedup vs Python: {time_python / time_numba:.1f}x")
-print(f"Speedup vs NumPy:  {time_numpy / time_numba:.1f}x")
+time_numba, result_numba = benchmark(rolling_zscore_numba, signal, WINDOW)
+print(f"Numba (after warmup):  {time_numba:.3f} seconds")
+print(f"Speedup vs Python: {time_python  / time_numba:.1f}x")
+print(f"Speedup vs NumPy:  {time_numpy   / time_numba:.1f}x")
 
-np.testing.assert_allclose(result_python, result_numba, rtol=1e-5)
+mask = ~np.isnan(result_python) & ~np.isnan(result_numba)
+np.testing.assert_allclose(result_python[mask], result_numba[mask], rtol=1e-5)
 print("Results match.")
 ```
 
 **Checkpoint questions:**
-- How does the first-call time compare to subsequent calls? What does this tell you about when Numba is and isn't appropriate?
-- You added exactly one decorator (`@jit`) and inlined the formula. How long did that take you? How does the effort compare to the speedup?
-- When would you *not* want to use Numba? (Hint: think about code you run once, or code that uses libraries Numba doesn't support.)
+- Compare the Numba loop to the pure Python loop. How different are they? What did you actually have to change?
+- How does the compilation time compare to the runtime? If you were processing one short time series in a script that runs once, would Numba help?
+- Numba's loop here is O(n × w) — it recomputes the window from scratch at every point. A smarter algorithm would update the running mean incrementally. Would it be worth implementing that? (For bonus work below.)
 
 ---
 
 ### Exercise 4: Cython (30 minutes)
 
-Cython requires more effort — you write a separate file and compile it. This is intentional: the goal is to feel the difference in workflow.
-
-**Step 1:** Create a file called `heat_index_cy.pyx`:
+**Step 1:** Create `rolling_zscore_cy.pyx`:
 
 ```python
-# heat_index_cy.pyx
+# rolling_zscore_cy.pyx
 import numpy as np
 cimport numpy as np
+from libc.math cimport sqrt
 
-def heat_index_cython(np.ndarray[double, ndim=2] temp,
-                      np.ndarray[double, ndim=2] rh):
-    cdef int nlat = temp.shape[0]
-    cdef int nlon = temp.shape[1]
-    cdef double T, RH
+def rolling_zscore_cython(np.ndarray[double, ndim=1] x, int w):
+    cdef int n = len(x)
+    cdef int win_size = 2 * w + 1
     cdef int i, j
-    cdef np.ndarray[double, ndim=2] result = np.empty((nlat, nlon))
+    cdef double mu, var, diff, std
+    cdef np.ndarray[double, ndim=1] result = np.full(n, np.nan)
 
-    for i in range(nlat):
-        for j in range(nlon):
-            T  = temp[i, j]
-            RH = rh[i, j]
-            result[i, j] = (-42.379
-                            + 2.04901523 * T
-                            + 10.14333127 * RH
-                            - 0.22475541 * T * RH
-                            - 0.00683783 * T * T
-                            - 0.05481717 * RH * RH
-                            + 0.00122874 * T * T * RH
-                            + 0.00085282 * T * RH * RH
-                            - 0.00000199 * T * T * RH * RH)
+    for i in range(w, n - w):
+        mu = 0.0
+        for j in range(i - w, i + w + 1):
+            mu += x[j]
+        mu /= win_size
+
+        var = 0.0
+        for j in range(i - w, i + w + 1):
+            diff = x[j] - mu
+            var += diff * diff
+        var /= win_size
+
+        if var > 0:
+            result[i] = (x[i] - mu) / sqrt(var)
+
     return result
 ```
 
-**Step 2:** Create `setup.py` to compile it:
+**Step 2:** Create `setup.py`:
 
 ```python
 # setup.py
@@ -229,12 +251,12 @@ from Cython.Build import cythonize
 import numpy as np
 
 setup(
-    ext_modules=cythonize("heat_index_cy.pyx"),
+    ext_modules=cythonize("rolling_zscore_cy.pyx"),
     include_dirs=[np.get_include()]
 )
 ```
 
-**Step 3:** Compile it from your terminal:
+**Step 3:** Compile:
 
 ```bash
 python setup.py build_ext --inplace
@@ -243,27 +265,68 @@ python setup.py build_ext --inplace
 **Step 4:** Back in your notebook:
 
 ```python
-from heat_index_cy import heat_index_cython
+from rolling_zscore_cy import rolling_zscore_cython
 
-time_cython, result_cython = benchmark(heat_index_cython, temperature, humidity)
+time_cython, result_cython = benchmark(rolling_zscore_cython, signal, WINDOW)
 print(f"Cython: {time_cython:.3f} seconds")
 print(f"Speedup vs Python: {time_python / time_cython:.1f}x")
-print(f"Speedup vs NumPy:  {time_numpy / time_cython:.1f}x")
+print(f"Speedup vs NumPy:  {time_numpy  / time_cython:.1f}x")
 
-np.testing.assert_allclose(result_python, result_cython, rtol=1e-5)
+mask = ~np.isnan(result_python) & ~np.isnan(result_cython)
+np.testing.assert_allclose(result_python[mask], result_cython[mask], rtol=1e-5)
 print("Results match.")
 ```
 
 **Checkpoint questions:**
-- How does Cython's performance compare to Numba? Were you expecting one to be faster?
-- Count the steps you had to take: writing the `.pyx` file, writing `setup.py`, running the compiler, importing the result. How does this workflow compare to adding `@jit`?
-- If you needed to change the formula, what would you have to do in each approach?
+- The Cython code looks almost identical to the Numba code — what are the actual differences in what you had to write?
+- You had to leave the notebook, write a separate file, write a build script, and run a compiler. How does this friction feel compared to the `@jit` decorator?
+- When might Cython's extra friction be worth it over Numba? (Hint: think about distributing your code as a package, or integrating with existing C libraries.)
+
+---
+
+### Bonus Exercise: Incremental Window Update (Optional, 15 minutes)
+
+The current loop recomputes the entire window sum from scratch at every step — O(n × w) operations. But a rolling window has a simple incremental update: when you slide one step forward, you add one new value and drop one old value.
+
+**Task:** Implement this optimization in Numba and measure whether it makes a meaningful difference:
+
+```python
+@jit(nopython=True)
+def rolling_zscore_numba_fast(x, w):
+    n = len(x)
+    result = np.full(n, np.nan)
+    win_size = 2 * w + 1
+
+    # Initialize the first window
+    win_sum   = np.sum(x[0 : win_size])
+    win_sum_sq = np.sum(x[0 : win_size] ** 2)
+
+    for i in range(w, n - w):
+        # Update window incrementally rather than recomputing
+        if i > w:
+            win_sum    += x[i + w]     - x[i - w - 1]
+            win_sum_sq += x[i + w]**2  - x[i - w - 1]**2
+
+        mu  = win_sum / win_size
+        var = win_sum_sq / win_size - mu ** 2
+        if var > 0:
+            result[i] = (x[i] - mu) / var ** 0.5
+
+    return result
+
+# Warmup
+_ = rolling_zscore_numba_fast(signal, WINDOW)
+
+time_fast, result_fast = benchmark(rolling_zscore_numba_fast, signal, WINDOW)
+print(f"Numba incremental: {time_fast:.3f} seconds")
+print(f"Speedup vs basic Numba: {time_numba / time_fast:.1f}x")
+```
+
+This bonus exercise illustrates an important point: **algorithmic improvement and compiler optimization are separate tools**, and often the algorithm matters more.
 
 ---
 
 ### Exercise 5: Summary Plot (10 minutes)
-
-Visualize everything you measured:
 
 ```python
 labels  = ['Pure Python', 'NumPy', 'Numba', 'Cython']
@@ -272,17 +335,19 @@ speedup = [time_python / t for t in times]
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
 
-ax1.bar(labels, times, color=['#d62728','#1f77b4','#2ca02c','#ff7f0e'])
+colors = ['#d62728', '#1f77b4', '#2ca02c', '#ff7f0e']
+
+ax1.bar(labels, times, color=colors)
 ax1.set_ylabel("Median runtime (seconds)")
 ax1.set_title("Absolute Runtime")
 
-ax2.bar(labels, speedup, color=['#d62728','#1f77b4','#2ca02c','#ff7f0e'])
+ax2.bar(labels, speedup, color=colors)
 ax2.set_ylabel("Speedup vs pure Python (×)")
 ax2.set_title("Speedup Factor")
 ax2.axhline(1, color='gray', linestyle='--')
 
 plt.tight_layout()
-plt.savefig("speedup_comparison.png", dpi=150)
+plt.savefig("timeseries_speedup.png", dpi=150)
 plt.show()
 ```
 
@@ -290,34 +355,31 @@ plt.show()
 
 ### Reflection Questions (15 minutes)
 
-Write a short answer (3–5 sentences) to each of these in your notebook as a markdown cell.
+**1. Human time vs. computer time**
+Rank the four approaches by how long they took *you* to implement, from fastest to slowest. Now rank them by runtime performance. Is the fastest to implement also the fastest to run? What does this suggest about how you should approach optimization in your own research workflow?
 
-**1. The real cost of optimization**
-You spent different amounts of time on each approach. If your pure Python baseline took 30 seconds to run and you only needed to run it twice, was any optimization worth it? At what point — in terms of how often you run the code and how long it takes — does it make sense to invest time in Numba or Cython?
+**2. The vectorization ceiling**
+The NumPy solution required reformulating the algorithm using cumulative sums — a non-obvious mathematical trick. In your own research, do you always have a clean mathematical reformulation available? What kinds of geoscience algorithms (think: iterative solvers, agent-based models, recursive filters) might resist vectorization entirely?
 
-**2. Correctness vs speed**
-Every exercise included an `assert_allclose` check. Why is this important? Have you ever changed code to make it faster and introduced a subtle bug? What's the risk of doing this in a research context?
+**3. Warmup and use patterns**
+Numba has a compilation cost on the first call. Describe two scenarios from your own research: one where this warmup cost is irrelevant, and one where it would be a real problem. How would you handle the second case?
 
-**3. Portability and collaboration**
-Imagine sharing your code with a collaborator who has never heard of Numba or Cython. Which approach is easiest to share and have them run immediately? Which requires the most setup? How does this affect your choice in a research group setting?
+**4. The algorithmic vs. compiler tradeoff**
+If you did the bonus exercise: did the incremental window update outperform the basic Numba version? What does this tell you about the relationship between choosing a better algorithm versus applying a faster compiler? Which would you invest time in first?
 
-**4. Knowing when to stop**
-NumPy was likely fast enough for this grid size. Given that Numba required minimal extra effort, can you articulate a personal rule of thumb for when you would stop at NumPy, when you would add Numba, and when you would go all the way to Cython?
-
-**5. The 80/20 rule**
-In your own current research code, where do you think most of the runtime is spent? Do you know? (If not — that's the answer. Look up Python's `cProfile` module.) Does it change how you think about where to invest optimization effort?
+**5. Collaboration and reproducibility**
+Imagine submitting your analysis code alongside a paper. Which implementation would be easiest for a reviewer or future researcher to read, verify, and modify? Does the answer change if the code needs to run on a computing cluster you don't control? How do you weigh performance against reproducibility in a research context?
 
 ---
 
-### Expected Results (Rough Benchmarks)
-
-Results vary by machine, but you should see approximately:
+### Expected Results
 
 | Method | Typical Speedup |
 |---|---|
 | Pure Python | 1× (baseline) |
-| NumPy | 50–200× |
-| Numba | 100–400× |
-| Cython | 100–400× |
+| NumPy | 20–80× |
+| Numba | 200–800× |
+| Cython | 200–800× |
+| Numba incremental (bonus) | 2–5× over basic Numba |
 
-If Numba and Cython aren't significantly faster than NumPy for this problem, that's actually an interesting result worth reflecting on — it suggests NumPy's vectorization was already near-optimal for this particular computation.
+Note that for this problem — unlike the heat index exercise — Numba and Cython are likely to **significantly outperform NumPy**, because the cumsum vectorization still allocates large intermediates and does redundant work that the compiled loop avoids entirely. This is the key teaching point: NumPy vectorization is not always the performance ceiling.
