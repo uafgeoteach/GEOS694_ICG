@@ -78,16 +78,22 @@ def get_example_data(plot=False):
     st = read()
     st.filter("highpass", freq=1)
     st = st.select(component="Z")
-    st.resample(250)  # upsample from 100 Hz
+    st.resample(100) 
+    st.taper(0.05) # taper ends to 0
+
+    # Pad zeros on front and back to allow STA/LTA to start running average
+    n = len(st[0].data)
+    data_out = np.hstack([np.zeros(n), st[0].data, np.zeros(n)])  # pad zeros
+
     if plot:
         st.plot()
-    return st[0]  
+
+    return data_out, tr.stats.sampling_rate
 
 # Define input variablers used by the STA/LTA functions
-tr = get_example_data()
-x = tr.data
-nsta = int(tr.stats.sampling_rate * 0.5)
-nlta = int(tr.stats.sampling_rate * 10)
+x, sampling_rate = get_example_data()
+nsta = int(sampling_rate * 0.5)
+nlta = int(sampling_rate * 10)
 ```
 
 ---
@@ -100,7 +106,7 @@ looping through the data.
 ```python
 def stalta_python(x, nsta, nlta):
     n = len(x)
-    ratio = []
+    ratio = [0] * nlta  # pad zeros before we start STA/LTA
 
     for i in range(nlta, n):
         # STA: mean squared amplitude over short window
