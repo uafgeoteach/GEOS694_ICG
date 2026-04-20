@@ -172,10 +172,10 @@ print(f"NumPy:   {time_numpy:.3E} seconds")
 
 - Plot the results from the NumPy approach and make sure they match with the pure python.
 
-**Reflection questions:**
-2) Approximately what speed up did you get with the NumPy approach, is this suprising to you?
-3) There is a difference in approach when using NumPy regarding memory allocation. Can you describe how the different functions approach this and speculate on why the NumPy approach is more optimal?
-
+**Reflection questions:**  
+2a) Approximately what speed up did you get with the NumPy approach, is this suprising to you?  
+2b) There is a difference in approach when using NumPy regarding memory allocation. Can you describe how the different functions approach this and speculate on why the NumPy approach is more optimal?
+  
 ---
 
 ### Exercise 3: Numba JIT 
@@ -222,13 +222,13 @@ print(f"Numba (after warmup): {time_numba:.3f} seconds")
 
 ```
 
-3a) Plot the results of all three implementations to make sure they match
+Plot the results of all three implementations to make sure they match  
 
 
-**Reflection questions:**
-- Compare the Numba implementation to the pure Python one line by line. What changed?
-- The Numba loop is still O(n × nlta) — the same algorithmic complexity as pure Python. Yet it is much faster. Where does the speedup come from if not from a better algorithm?
-- How does the compilation time compare to the runtime for this problem? Would there be a time series length at which this would become an issue?
+**Reflection questions:**  
+3a) Compare the Numba implementation to the pure Python one line by line. What changed?  
+3b) The Numba loop is still O(n × nlta) — the same algorithmic complexity as pure Python. Yet it is much faster. Where does the speedup come from if not from a better algorithm?  
+3c) How does the compilation time compare to the runtime for this problem? Would there be a time series length at which this would become an issue?  
 
 ---
 ### Exercise 4: Cython
@@ -303,8 +303,8 @@ np.testing.assert_allclose(result_python, result_cython, rtol=1e-5)
 print("Results match.")
 ```
 
-**Reflection Questions**
-4a) How does Cython compare to the other implementations in terms of speed?
-4b) The Cython version required you to declare types for every variable (cdef double, cdef int). What happens to the mental overhead of writing code when you have to think about types explicitly?
-4c) Cython produces a compiled .so file that you import like a normal module. How does this change how you would distribute your code compared to the other implementations? 
+**Reflection Questions**  
+4a) How does Cython compare to the other implementations in terms of speed?  
+4b) The Cython version required you to declare types for every variable (cdef double, cdef int). What happens to the mental overhead of writing code when you have to think about types explicitly?  
+4c) Cython produces a compiled .so file that you import like a normal module. How does this change how you would distribute your code compared to the other implementations?   
 
