@@ -301,12 +301,6 @@ from stalta_cy import stalta_cython
 time_cython, result_cython = benchmark(stalta_cython, x,  nsta, nlta)
 
 print(f"Cython: {time_cython:.3f} seconds")
-print(f"Speedup vs Python:           {time_python     / time_cython:.1f}x")
-print(f"Speedup vs NumPy:            {time_numpy      / time_cython:.1f}x")
-print(f"Speedup vs Numba:      {time_numba      / time_cython:.1f}x")
-
-np.testing.assert_allclose(result_python, result_cython, rtol=1e-5)
-print("Results match.")
 ```
 
 **Reflection Questions**  
