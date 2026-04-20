@@ -231,7 +231,7 @@ print(f"Numba (after warmup): {time_numba:.3f} seconds")
 - How does the compilation time compare to the runtime for this problem? Would there be a time series length at which this would become an issue?
 
 ---
-### Cython
+### Exercise 4: Cython
 
 Cython is a static compiler for writing Python code that achieves C-like perfomance by adding static type declarations. You will see below that using Cython require additional development steps, trading human/development time for faster compute time. Cython does this by building a Python module (library) out of your Cython code, which can then be called through the standard Python intepreter.
 
