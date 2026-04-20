@@ -88,7 +88,7 @@ def get_example_data(plot=False):
     if plot:
         st.plot()
 
-    return data_out, tr.stats.sampling_rate
+    return data_out, st[0].stats.sampling_rate
 
 # Define input variablers used by the STA/LTA functions
 x, sampling_rate = get_example_data()
