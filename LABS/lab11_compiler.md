@@ -1,0 +1,1 @@
+../compiled/compiler_lab.md

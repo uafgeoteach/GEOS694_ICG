@@ -1,0 +1,1 @@
+../mpi/mpi_lab.md

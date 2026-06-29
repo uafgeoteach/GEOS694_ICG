@@ -1,0 +1,1 @@
+../hpc/lab_hpc.md
