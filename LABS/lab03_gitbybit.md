@@ -1,32 +1,41 @@
-Lab Description:
+# Lab 03: Git by Bit
 
-This lab will have you going through a Git/GitHub tutorial (GitByBit) through VSCode.
+## Lab Description
 
-Objectives
+This lab will have you working through a Git/GitHub tutorial called **GitByBit** inside VSCode.
 
-Learn how to use Git and GitHub through the command line and through VSCode
-Gain hands on experience with the Git branch model
-Understand how Git and GitHub interact and how you can use these tools for version control of your own codes.
+## Objectives
 
-Instructions:
+- Learn how to use Git and GitHub through the command line and through VSCode
+- Gain hands-on experience with the Git branch model
+- Understand how Git and GitHub interact and how you can use these tools for version control of your own code
 
-Follow along with the GitByBit tutorial in VSCode
-You may skip through information that is redundant 
-Try to answer the quizzes but I am not taking score
+## Instructions
 
-Completion:
+- Follow along with the [GitByBit](https://gitbybit.com/) tutorial in VSCode
+- You may skip through sections that are redundant to what you already know
+- Try to answer the quizzes, but they are not graded
 
-Please stop after you complete section `History`
-Short reflection in the textbox answering questions in (4)
+## Completion
 
-Tasks 
+- **Stop after you complete the `History` section**
+- Write a short reflection in the Canvas text box answering the questions in Task 2 below
 
-Go to GitByBit https://gitbybit.com/
+---
 
-Click `Start in VS Code`
-Work through the tutorial in VS Code
-Before Lab is over, answer the short reflection questions below:
-Approximately what percentage of the tutorial did you finish?
-Was that tutorial helpful?
-Anything you wish it would have covered or thought was redundant?
-Would you recommend this for future offerings of this course?
+## Tasks
+
+### Task 1 — Work Through GitByBit
+
+1. Go to [gitbybit.com](https://gitbybit.com/)
+2. Click **"Start in VS Code"**
+3. Work through the tutorial in VSCode, stopping when you reach the end of the `History` section
+
+### Task 2 — Reflection
+
+Answer the following questions in the Canvas submission text box:
+
+1. Approximately what **percentage of the tutorial** did you finish?
+2. Was the tutorial **helpful**?
+3. Was there anything you wish it had covered, or anything you found **redundant**?
+4. Would you **recommend** this tutorial for future offerings of this course?
